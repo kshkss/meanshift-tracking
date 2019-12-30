@@ -13,64 +13,80 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def meanshift(orig, target, offset0):
-    assert orig.ndim == 2 and orig.dtype == np.uint8, "Invalid function argument: input 2-dimensional array of uint8."
-    assert target.ndim == 2 and target.dtype == np.uint8, "Invalid function argument: input 2-dimensional array of uint8."
-    assert offset0[0] >= 0 and offset0[1] >= 0, "Invalid function argument:"
-    assert offset0[0] < target.shape[1] and offset0[1] < target.shape[0], "Invalid function argument:"
+class Point2d:
+    x = 0
+    y = 0
+    def __init__(self, *, x, y):
+        self.x = x
+        self.y = y
 
-    cdef uint8_t[:,:] orig_v = orig
-    cdef uint8_t[:,:] tgt_v = target
+def histogram(image, patch_size, offset0):
+    freq = np.zeros(256, dtype=np.float64)
+    cdef uint8_t[:,:] image_v = image
+    cdef double[:] freq_v = freq
 
-    # compute histogram of orig
     cdef int embed[2]
     cdef double size[2]
     cdef double offset[2]
     for i in range(2):
-        embed[i] = orig.shape[1-i]
-        size[i] = orig.shape[1-i]
-        offset[i] = 0
-    freq0 = np.zeros(256, dtype=np.float64)
-    cdef double[:] freq0_v = freq0
-    histogram_gauss(&orig_v[0,0], &freq0_v[0], offset, size, embed)
-    #print(freq0)
+        embed[i] = image.shape[1-i]
+        size[i] = patch_size[1-i]
+    offset[0] = offset0.x
+    offset[1] = offset0.y
+
+    histogram_gauss(&image_v[0,0], &freq_v[0], offset, size, embed)
+    return freq
+
+def mean(image, weight, patch_size, offset0):
+    cdef uint8_t[:,:] image_v = image
+    cdef double[:] weight_v = weight
+
+    cdef int embed[2]
+    cdef double size[2]
+    cdef double offset[2]
+    for i in range(2):
+        embed[i] = image.shape[1-i]
+        size[i] = patch_size[1-i]
+    offset[0] = offset0.x
+    offset[1] = offset0.y
+
+    meanshift_gauss(&image_v[0,0], &weight_v[0], offset, size, embed)
+    return Point2d(x = offset[0], y = offset[1])
+
+def meanshift(orig, target, offset):
+    assert orig.ndim == 2 and orig.dtype == np.uint8, "Invalid function argument: input 2-dimensional array of uint8."
+    assert target.ndim == 2 and target.dtype == np.uint8, "Invalid function argument: input 2-dimensional array of uint8."
+    assert offset.x >= 0 and offset.y >= 0, "Invalid function argument:"
+    assert offset.x < target.shape[1] and offset.y < target.shape[0], "Invalid function argument:"
+    logger.debug( "({}, {})".format(offset.x, offset.y) )
+    patch_size = orig.shape
+
+    # compute histogram of orig
+    freq0 = histogram(orig, patch_size, Point2d(x = 0, y = 0))
 
     # compute histogram of target
-    for i in range(2):
-        embed[i] = target.shape[1-i]
-        size[i] = orig.shape[1-i]
-        offset[i] = offset0[i]
-    logger.debug( "({}, {})".format(offset[0], offset[1]) )
-    freq = np.zeros(256, dtype=np.float64) + 1e-16
-    cdef double[:] freq_v = freq
-    histogram_gauss(&tgt_v[0,0], &freq_v[0], offset, size, embed)
+    freq = histogram(target, patch_size, offset) + 1e-16
+
     rho = np.sum( np.sqrt( freq0 * freq) )
     r = 1
     dr = 1
-
-    weight = np.empty(freq.shape, dtype=np.float64)
-    cdef double[:] weight_v = weight
-
-    #cdef double offset_old[2]
     while(dr > 1e-2):
         rho00 = rho
-        offset_old = (offset[0], offset[1])
+        offset_old = offset
         for i in range(100):
             # compute weight
-            np.copyto(weight, np.sqrt(freq0 / freq, dtype=np.float64))
-            #assert weight.dtype == np.float64, "weight is not 32-bit float"
+            weight = np.sqrt(freq0 / freq)
+            assert weight.dtype == np.float64, "weight is not 32-bit float"
 
             # compute mean shift
-            meanshift_gauss(&tgt_v[0,0], &weight_v[0], offset, size, embed)
+            offset = mean(target, weight, patch_size, offset)
 
             # compute histogram of target
-            np.copyto(freq, np.zeros(256, dtype=np.float64) + 1e-16)
-            histogram_gauss(&tgt_v[0,0], &freq_v[0], offset, size, embed)
+            freq = histogram(target, patch_size, offset) + 1e-16
 
         rho = np.sum( np.sqrt( freq0 * freq) )
         r = (rho - rho00)/rho00
-        dr = math.sqrt((offset[0] - offset_old[0])**2 + (offset[1] - offset_old[1])**2)
-        logger.debug("{}, {}, {} {}".format(offset[0], offset[1], r, dr))
-
-    return (offset[0], offset[1])
+        dr = math.sqrt((offset.x - offset_old.x)**2 + (offset.y - offset_old.y)**2)
+        logger.debug("{}, {}, {} {}".format(offset.x, offset.y, r, dr))
+    return offset
 
