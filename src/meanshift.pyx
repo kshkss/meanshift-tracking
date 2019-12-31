@@ -1,3 +1,4 @@
+from meanshift_version import *
 from libc.stdint cimport uint8_t
 
 cdef extern from "histogram.h":
