@@ -1940,7 +1940,6 @@ static const char __pyx_k_logging[] = "logging";
 static const char __pyx_k_memview[] = "memview";
 static const char __pyx_k_offset0[] = "offset0";
 static const char __pyx_k_prepare[] = "__prepare__";
-static const char __pyx_k_version[] = "_version";
 static const char __pyx_k_Ellipsis[] = "Ellipsis";
 static const char __pyx_k_getstate[] = "__getstate__";
 static const char __pyx_k_itemsize[] = "itemsize";
@@ -1974,6 +1973,7 @@ static const char __pyx_k_allocate_buffer[] = "allocate_buffer";
 static const char __pyx_k_dtype_is_object[] = "dtype_is_object";
 static const char __pyx_k_pyx_PickleError[] = "__pyx_PickleError";
 static const char __pyx_k_setstate_cython[] = "__setstate_cython__";
+static const char __pyx_k_meanshift_version[] = "meanshift_version";
 static const char __pyx_k_pyx_unpickle_Enum[] = "__pyx_unpickle_Enum";
 static const char __pyx_k_src_meanshift_pyx[] = "src/meanshift.pyx";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
@@ -2078,6 +2078,7 @@ static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_math;
 static PyObject *__pyx_n_s_mean;
 static PyObject *__pyx_n_s_meanshift;
+static PyObject *__pyx_n_s_meanshift_version;
 static PyObject *__pyx_n_s_memview;
 static PyObject *__pyx_n_s_metaclass;
 static PyObject *__pyx_n_s_mode;
@@ -2138,7 +2139,6 @@ static PyObject *__pyx_kp_s_unable_to_allocate_array_data;
 static PyObject *__pyx_kp_s_unable_to_allocate_shape_and_str;
 static PyObject *__pyx_n_s_unpack;
 static PyObject *__pyx_n_s_update;
-static PyObject *__pyx_n_s_version;
 static PyObject *__pyx_n_s_weight;
 static PyObject *__pyx_kp_u_weight_is_not_32_bit_float;
 static PyObject *__pyx_n_s_weight_v;
@@ -17896,6 +17896,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_math, __pyx_k_math, sizeof(__pyx_k_math), 0, 0, 1, 1},
   {&__pyx_n_s_mean, __pyx_k_mean, sizeof(__pyx_k_mean), 0, 0, 1, 1},
   {&__pyx_n_s_meanshift, __pyx_k_meanshift, sizeof(__pyx_k_meanshift), 0, 0, 1, 1},
+  {&__pyx_n_s_meanshift_version, __pyx_k_meanshift_version, sizeof(__pyx_k_meanshift_version), 0, 0, 1, 1},
   {&__pyx_n_s_memview, __pyx_k_memview, sizeof(__pyx_k_memview), 0, 0, 1, 1},
   {&__pyx_n_s_metaclass, __pyx_k_metaclass, sizeof(__pyx_k_metaclass), 0, 0, 1, 1},
   {&__pyx_n_s_mode, __pyx_k_mode, sizeof(__pyx_k_mode), 0, 0, 1, 1},
@@ -17956,7 +17957,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_s_unable_to_allocate_shape_and_str, __pyx_k_unable_to_allocate_shape_and_str, sizeof(__pyx_k_unable_to_allocate_shape_and_str), 0, 0, 1, 0},
   {&__pyx_n_s_unpack, __pyx_k_unpack, sizeof(__pyx_k_unpack), 0, 0, 1, 1},
   {&__pyx_n_s_update, __pyx_k_update, sizeof(__pyx_k_update), 0, 0, 1, 1},
-  {&__pyx_n_s_version, __pyx_k_version, sizeof(__pyx_k_version), 0, 0, 1, 1},
   {&__pyx_n_s_weight, __pyx_k_weight, sizeof(__pyx_k_weight), 0, 0, 1, 1},
   {&__pyx_kp_u_weight_is_not_32_bit_float, __pyx_k_weight_is_not_32_bit_float, sizeof(__pyx_k_weight_is_not_32_bit_float), 0, 1, 0, 0},
   {&__pyx_n_s_weight_v, __pyx_k_weight_v, sizeof(__pyx_k_weight_v), 0, 0, 1, 1},
@@ -18644,7 +18644,7 @@ if (!__Pyx_RefNanny) {
   #endif
 
   /* "meanshift.pyx":1
- * from _version import *             # <<<<<<<<<<<<<<
+ * from meanshift_version import *             # <<<<<<<<<<<<<<
  * from libc.stdint cimport uint8_t
  * 
  */
@@ -18653,7 +18653,7 @@ if (!__Pyx_RefNanny) {
   __Pyx_INCREF(__pyx_n_s__22);
   __Pyx_GIVEREF(__pyx_n_s__22);
   PyList_SET_ITEM(__pyx_t_1, 0, __pyx_n_s__22);
-  __pyx_t_2 = __Pyx_Import(__pyx_n_s_version, __pyx_t_1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_Import(__pyx_n_s_meanshift_version, __pyx_t_1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_import_star(__pyx_t_2) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
@@ -18818,7 +18818,7 @@ if (!__Pyx_RefNanny) {
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
   /* "meanshift.pyx":1
- * from _version import *             # <<<<<<<<<<<<<<
+ * from meanshift_version import *             # <<<<<<<<<<<<<<
  * from libc.stdint cimport uint8_t
  * 
  */
