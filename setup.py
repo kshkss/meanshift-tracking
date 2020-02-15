@@ -14,6 +14,6 @@ setup(
     py_modules=['meanshift_version'],
     scripts=['scripts/rotation-center', 'scripts/drift'],
     python_requires='>=3.6, <4',
-    install_requires=['numpy>=1.17', 'Cython>=0.29', 'tifffile'],
+    install_requires=['numpy>=1.17', 'cython>=0.29', 'tifffile'],
 )
 
