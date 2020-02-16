@@ -1,0 +1,44 @@
+#!/usr/bin/python3
+
+import os
+import argparse
+import numpy as np
+import tifffile as tiff
+from meanshift import meanshift
+
+class Point2d:
+    x = 0
+    y = 0
+    def __init__(self, *, x, y):
+        self.x = x
+        self.y = y
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("base_frame", help="File name for an image")
+    parser.add_argument("next_frame", help="File name for an image of the next step")
+    args = parser.parse_args()
+
+    base_file = args.base_frame
+    next_file = args.next_frame
+
+    assert (os.path.exists(base_file)), ("Input is expected as a directory: {}".format(base_file))
+    assert (os.path.exists(next_file)), ("Input is expected as a directory: {}".format(next_file))
+
+    base = tiff.imread(base_file).astype(np.float32)
+    next_ = tiff.imread(next_file).astype(np.float32)
+
+    height, width = base.shape
+
+    maxv = np.max(base)
+    minv = np.min(base)
+    base = (255*(base - minv)/(maxv - minv)).astype(np.uint8)
+    next_ = (255*(next_ - minv)/(maxv - minv)).astype(np.uint8)
+
+    offset0 = Point2d(x=0, y=0)
+    offset = meanshift(base, next_, offset0)
+
+    print("{} {}".format(offset.x, offset.y))
+
+main()
+
