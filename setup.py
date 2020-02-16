@@ -12,7 +12,7 @@ setup(
     package_dir={'': 'src'},
     ext_modules=cythonize(ext_modules, compiler_directives={'language_level':'3'}),
     py_modules=['meanshift_version'],
-    scripts=['scripts/rotation-center', 'scripts/drift'],
+    scripts=['scripts/drift'],
     python_requires='>=3.6, <4',
     install_requires=['numpy>=1.17', 'cython>=0.29', 'tifffile'],
 )
