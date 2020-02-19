@@ -4,7 +4,7 @@ from Cython.Build import cythonize
 ext_modules = [
         Extension("meanshift",
             sources=["src/histogram.cpp", "src/meanshift.pyx"],
-            extra_compile_args=['-O3'])
+            extra_compile_args=['-O3', '-std=c++11'])
         ]
 
 setup(
