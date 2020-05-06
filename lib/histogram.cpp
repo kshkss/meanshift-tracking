@@ -1,11 +1,10 @@
-#include <cstdint>
 #include <cstdio>
 #include <cmath>
 
 #include "histogram.h"
 
 template<class T>
-void histogram_epanechnikov(uint8_t *vs, T *freq, T *offset, T *size, int *embed)
+void histogram_epanechnikov(uint8_t *vs, T *freq, T *offset, T *size, int32_t *embed)
 {
   T cx = (offset[0] + 0.5*size[0]);
   T cy = (offset[1] + 0.5*size[1]);
@@ -25,7 +24,7 @@ void histogram_epanechnikov(uint8_t *vs, T *freq, T *offset, T *size, int *embed
 }
 
 template<class T>
-void meanshift_epanechnikov(uint8_t *vs, T *weight, T *offset, T *size, int *embed)
+void meanshift_epanechnikov(uint8_t *vs, T *weight, T *offset, T *size, int32_t *embed)
 {
   T cx = (offset[0] + 0.5*size[0]);
   T cy = (offset[1] + 0.5*size[1]);
@@ -55,7 +54,7 @@ void meanshift_epanechnikov(uint8_t *vs, T *weight, T *offset, T *size, int *emb
 }
 
 template<class T>
-void histogram_gauss(uint8_t *vs, T *freq, T *offset, T *size, int *embed)
+void histogram_gauss(uint8_t *vs, T *freq, T *offset, T *size, int32_t *embed)
 {
   T cx = (offset[0] + 0.5*size[0]);
   T cy = (offset[1] + 0.5*size[1]);
@@ -77,7 +76,7 @@ void histogram_gauss(uint8_t *vs, T *freq, T *offset, T *size, int *embed)
 }
 
 template<class T>
-void meanshift_gauss(uint8_t *vs, T *weight, T *offset, T *size, int *embed)
+void meanshift_gauss(uint8_t *vs, T *weight, T *offset, T *size, int32_t *embed)
 {
   T cx = (offset[0] + 0.5*size[0]);
   T cy = (offset[1] + 0.5*size[1]);
@@ -106,22 +105,22 @@ void meanshift_gauss(uint8_t *vs, T *weight, T *offset, T *size, int *embed)
   offset[1] += offset_y/wtot;
 }
 
-void histogram_epanechnikov(uint8_t *vs, double *freq, double *offset, double *size, int *embed)
+void histogram_epanechnikov(uint8_t *vs, double *freq, double *offset, double *size, int32_t *embed)
 {
   histogram_epanechnikov<double>(vs, freq, offset, size, embed);
 }
 
-void histogram_gauss(uint8_t *vs, double *freq, double *offset, double *size, int *embed)
+void histogram_gauss(uint8_t *vs, double *freq, double *offset, double *size, int32_t *embed)
 {
   histogram_gauss<double>(vs, freq, offset, size, embed);
 }
 
-void meanshift_epanechnikov(uint8_t *vs, double *weight, double *offset, double *size, int *embed)
+void meanshift_epanechnikov(uint8_t *vs, double *weight, double *offset, double *size, int32_t *embed)
 {
   meanshift_epanechnikov<double>(vs, weight, offset, size, embed);
 }
 
-void meanshift_gauss(uint8_t *vs, double *weight, double *offset, double *size, int *embed)
+void meanshift_gauss(uint8_t *vs, double *weight, double *offset, double *size, int32_t *embed)
 {
   meanshift_gauss<double>(vs, weight, offset, size, embed);
 }

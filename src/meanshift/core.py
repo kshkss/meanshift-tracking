@@ -1,18 +1,37 @@
-from meanshift_version import *
-from libc.stdint cimport uint8_t
-
-cdef extern from "histogram.h":
-    cdef void histogram_epanechnikov(uint8_t *vs, double *freq, double *offset, double *size, int *embed)
-    cdef void histogram_gauss(uint8_t *vs, double *freq, double *offset, double *size, int *embed)
-    cdef void meanshift_epanechnikov(uint8_t *vs, double *freq, double *offset, double *size, int *embed)
-    cdef void meanshift_gauss(uint8_t *vs, double *freq, double *offset, double *size, int *embed)
-
-import numpy as np
 import os
-import math
 import logging
+from ctypes import *
+import numpy as np
+import numpy.ctypeslib as npct
 
 logger = logging.getLogger(__name__)
+
+if os.name == 'posix':
+    libcd = cdll.LoadLibrary(os.path.join(os.path.dirname(__file__), "libmeanshift.so"))
+elif os.name == 'nt':
+    libcd = cdll.LoadLibrary(os.path.join(os.path.dirname(__file__), "Meanshift.dll"))
+else:
+    logger.error("Unsupported OS.")
+    raise Exception
+
+freq = npct.ndpointer(dtype=np.float64, ndim=1, flags='CONTIGUOUS')
+image = npct.ndpointer(dtype=np.uint8, ndim=2, flags='CONTIGUOUS')
+dims = npct.ndpointer(dtype=np.uint8, ndim=2, flags='CONTIGUOUS')
+offsets = npct.ndpointer(dtype=np.uint8, ndim=2, flags='CONTIGUOUS')
+pitches = npct.ndpointer(dtype=np.uint32, ndim=2, flags='CONTIGUOUS')
+args = [image, freq, offsets, dims, pitches]
+
+libcd.histogram_epanechnikov.restype = None
+libcd.histogram_epanechnikov.argtypes = args
+
+libcd.histogram_gauss.restype = None
+libcd.histogram_gauss.argtypes = args
+
+libcd.meanshift_epanechnikov.restype = None
+libcd.meanshift_epanechnikov.argtypes = args
+
+libcd.meanshift_gauss.restype = None
+libcd.meanshift_gauss.argtypes = args
 
 class Point2d:
     x = 0
@@ -22,36 +41,25 @@ class Point2d:
         self.y = y
 
 def histogram(image, patch_size, offset0):
+    assert image.ndim == 2
     freq = np.zeros(256, dtype=np.float64)
-    cdef uint8_t[:,:] image_v = image
-    cdef double[:] freq_v = freq
 
-    cdef int embed[2]
-    cdef double size[2]
-    cdef double offset[2]
-    for i in range(2):
-        embed[i] = image.shape[1-i]
-        size[i] = patch_size[1-i]
-    offset[0] = offset0.x
-    offset[1] = offset0.y
+    embed = np.array([image.shape[1], image.shape[0]])
+    size = np.array([patch_size[1], patch_size[0]])
+    offset = np.array([offset0.x, offset0.y])
 
-    histogram_gauss(&image_v[0,0], &freq_v[0], offset, size, embed)
+    histogram_gauss(image, freq, offset, size, embed)
     return freq
 
 def mean(image, weight, patch_size, offset0):
-    cdef uint8_t[:,:] image_v = image
-    cdef double[:] weight_v = weight
+    assert image.ndim == 2
+    assert weight.ndim == 1
 
-    cdef int embed[2]
-    cdef double size[2]
-    cdef double offset[2]
-    for i in range(2):
-        embed[i] = image.shape[1-i]
-        size[i] = patch_size[1-i]
-    offset[0] = offset0.x
-    offset[1] = offset0.y
+    embed = np.array([image.shape[1], image.shape[0]])
+    size = np.array([patch_size[1], patch_size[0]])
+    offset = np.array([offset0.x, offset0.y])
 
-    meanshift_gauss(&image_v[0,0], &weight_v[0], offset, size, embed)
+    meanshift_gauss(image, weight, offset, size, embed)
     return Point2d(x = offset[0], y = offset[1])
 
 def meanshift(orig, target, offset):
