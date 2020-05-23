@@ -15,8 +15,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 class Point2d:
-    x = 0
-    y = 0
     def __init__(self, *, x, y):
         self.x = x
         self.y = y
